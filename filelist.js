@@ -1,7 +1,6 @@
 const crypto = require ("crypto");
 const fs = require("fs");
 module.exports = {getFiles: () => get(), writeFiles: (a) => set(a)};
-
 function get(){
 	return JSON.parse(decrypt(fs.readFileSync("files.txt", "utf8"), process.env.FILE_ENCRYPTION_KEY))
 }

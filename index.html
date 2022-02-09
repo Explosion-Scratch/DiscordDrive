@@ -4,10 +4,19 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="//unpkg.com/vue@3"></script>
 	<title>DiscordDrive</title>
 </head>
 <body>
-	<div id="app"></div>
+	<div id="app">
+		<div id="upload">
+			<input type="file" id="fileInput" @change="fileChanged($event)"/>
+			<button id="upload_button" @click="upload">Upload</button>
+		</div>
+		<ul id="files">
+			<li v-for="file in files">{{file.realName}} </li>
+		</ul>
+	</div>
 	<script src="client.js"></script>
 </body>
 </html>

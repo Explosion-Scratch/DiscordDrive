@@ -13,7 +13,8 @@ client.on("ready", () => {
 })
 
 async function getFile(name){
-	name = toHex(name);
+	// name should be hex for url stuff
+	// name = toHex(name);
 	let parts = getFiles()?.files?.find(i => i.name === name)?.parts;
 	if (!parts){
 		throw new Error("File not found");
@@ -23,8 +24,12 @@ async function getFile(name){
 		promises.push(fetch(url).then(r => r.json()));
 	}
 	let bits = await Promise.all(promises);
+	let otherData = {}
+	bits.forEach((i) => {
+		otherData = {...otherData, ...i.other};
+	})
 	bits = Buffer.from(bits.map(i => i.data).join(""), "base64");
-	return bits;
+	return {data: otherData, buffer: bits};
 }
 
 function toHex(str,hex){
@@ -40,23 +45,30 @@ function toHex(str,hex){
   }
   return hex
 }
-async function sendFile(file, name){
+//TODO: Add sending extra data
+async function sendFile(file, name, data){
 	let date = Date.now();
 	let b64 = file.toString("base64");
+	let parts = [];
 	if (b64.length < ALMOST_EIGHT_MB){
 		parts = [b64];
 	} else {
-		let parts = b64.match(new RegExp(`.{1,${ALMOST_EIGHT_MB}}`, "g"));
+		console.log("Parts more than 8mb")
+		parts = chunk(b64, ALMOST_EIGHT_MB);
+		console.log(b64.length)
+		console.log(b64.slice(0, 50))
 	}
+	console.log({parts});
 	let files = getFiles();
 	let attachments = [];
 	parts.forEach((part, idx) => {
 		let buffer = Buffer.from(JSON.stringify({
 			partNum: idx,
+			other: data,
 			total: parts.length,
-			data: part,
 			fileName: name,
 			dateUploaded: date,
+			data: part,
 		}));
 		attachments.push({attachment: buffer, name: `${name}_${idx}_of_${parts.length}.json`});
 	})
@@ -64,8 +76,11 @@ async function sendFile(file, name){
 		name,
 		dateUploaded: date,
 		totalParts: parts.length,
+		other: data,
+		realName: fromHex(name),
 		parts: []
 	};
+	
 	for (let attachment_list of groupArr(attachments, 10)){
 		let msg = await CHANNEL.send({
 			files: attachment_list,
@@ -86,7 +101,28 @@ function groupArr(data, n) {
     }
     return group;
 }
+function fromHex(hex,str){
+  try{
+    str = decodeURIComponent(hex.replace(/(..)/g,'%$1'))
+  }
+  catch(e){
+    str = hex
+    console.log('invalid hex input: ' + hex)
+  }
+  return str
+}
 
 client.login(process.env.DISCORD_BOT_TOKEN)
 
 module.exports = {sendFile, getFile};
+
+function chunk(str, size) {
+  const numChunks = Math.ceil(str.length / size)
+  const chunks = new Array(numChunks)
+
+  for (let i = 0, o = 0; i < numChunks; ++i, o += size) {
+    chunks[i] = str.substr(o, size)
+  }
+
+  return chunks
+}
