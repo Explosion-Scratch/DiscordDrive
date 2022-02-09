@@ -14,7 +14,7 @@
 			<button id="upload_button" @click="upload">Upload</button>
 		</div>
 		<ul id="files">
-			<li v-for="file in files">{{file.realName}} </li>
+			<li v-for="file in files">{{file.realName}} <a :href="`https://discorddrive.explosionscratc.repl.co/api/download/${file.name}?password=${password}`">Download</a></li>
 		</ul>
 	</div>
 	<script src="client.js"></script>

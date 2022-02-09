@@ -14,7 +14,11 @@ a.get("/getFile/:name", verifyToken, async (req, res) => {
 
 a.get("/download/:name", verifyToken, async (req, res) => {
 	try {
-		let {buffer} = await getFile(req.params.name);
+		let {buffer, data} = await getFile(req.params.name);
+		console.log(data);
+		res.set({
+			"Content-Disposition": `attachment; filename="${Buffer.from(req.params.name, "hex")}"`
+		})
 		res.send(buffer);
 	} catch(e){
 		res.status(500).json({error: true, message: "No such file", err: e});
@@ -29,7 +33,8 @@ a.post("/uploadFile", verifyToken, async (req, res) => {
 	await sendFile(file.data, name, {
 		mime: file.mimetype, 
 		md5: file.md5, 
-		size: file.size, 
+		size: file.size,
+		realName: file.name,
 		data: JSON.parse(req.body.data || "{}") || {}
 	})
 	return res.json(getFiles().files.find(i => i.name === name))

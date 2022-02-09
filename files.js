@@ -53,12 +53,8 @@ async function sendFile(file, name, data){
 	if (b64.length < ALMOST_EIGHT_MB){
 		parts = [b64];
 	} else {
-		console.log("Parts more than 8mb")
 		parts = chunk(b64, ALMOST_EIGHT_MB);
-		console.log(b64.length)
-		console.log(b64.slice(0, 50))
 	}
-	console.log({parts});
 	let files = getFiles();
 	let attachments = [];
 	parts.forEach((part, idx) => {
@@ -70,7 +66,7 @@ async function sendFile(file, name, data){
 			dateUploaded: date,
 			data: part,
 		}));
-		attachments.push({attachment: buffer, name: `${name}_${idx}_of_${parts.length}.json`});
+		attachments.push({attachment: buffer, name: `${name}_${idx + 1}_of_${parts.length}.json`});
 	})
 	let item = {
 		name,
@@ -81,7 +77,7 @@ async function sendFile(file, name, data){
 		parts: []
 	};
 	
-	for (let attachment_list of groupArr(attachments, 10)){
+	for (let attachment_list of groupArr(attachments, 3)){
 		let msg = await CHANNEL.send({
 			files: attachment_list,
 		})
