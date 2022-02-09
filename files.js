@@ -11,7 +11,9 @@ client.on("ready", () => {
 	console.log("Bot ready")
 	CHANNEL = client.channels.cache.get(process.env.CHANNEL_ID);
 })
-
+async function setFilesFromDiscord(){
+	getMessages(CHANNEL)
+}
 async function getFile(name){
 	// name should be hex for url stuff
 	// name = toHex(name);
@@ -121,4 +123,27 @@ function chunk(str, size) {
   }
 
   return chunks
+}
+
+async function getMessages(channel, limit = 100){
+  let out = []
+  if (limit <= 100) {
+    let messages = await channel.messages.fetch({ limit: limit })
+    out.push(...messages.array())
+  } else {
+    let rounds = (limit / 100) + (limit % 100 ? 1 : 0)
+    let last_id = ""
+    for (let x = 0; x < rounds; x++) {
+      const options = {
+        limit: 100
+      }
+      if (last_id.length > 0) {
+        options.before = last_id
+      }
+      const messages = await channel.messages.fetch(options)
+      out.push(...messages.array())
+      last_id = messages.array()[(messages.array().length - 1)].id
+    }
+  }
+  return out
 }
