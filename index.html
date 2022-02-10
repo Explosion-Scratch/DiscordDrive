@@ -6,6 +6,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet/less" type="text/css" href="styles.less" />
 	<script src="https://cdn.jsdelivr.net/npm/less@4" ></script>
+	<link href="https://cdn.jsdelivr.net/npm/@exuanbo/file-icons-js@latest/dist/css/file-icons.min.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/@exuanbo/file-icons-js@latest/dist/js/file-icons.min.js"></script>
 	<script src="//unpkg.com/vue@3"></script>
 	<title>DiscordDrive</title>
 </head>
@@ -46,7 +48,7 @@
 				<li v-for="file in files" :class="file.selected ? 'selected' : ''">
 					<div @click=>
 						<input @change="setSelectionState(file, $event.target)" type="checkbox" id="fileSelect" data-file="file.other.data.path"/>
-						<span id="text">{{file.realName}}</span>
+						<span id="text"><span id="icon" :class="file.icon || ''"></span> {{file.realName}}</span>
 					</div>
 					<div id="buttons">
 						<a :href="`https://discorddrive.explosionscratc.repl.co/api/download/${file.name}?password=${password}`">

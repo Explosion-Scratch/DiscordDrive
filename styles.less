@@ -24,6 +24,7 @@ body {
         background: #0001;
         position: fixed;
         inset: 0;
+				z-index: 100;
         backdrop-filter: blur(3px);
     }
 
@@ -144,6 +145,9 @@ body {
             &>div {
                 margin-right: 5px;
             }
+					 svg {
+					  	color: darken(@color, 10%);
+					 }
         }
 
         ul {
@@ -160,6 +164,7 @@ body {
                 }
                 &>div {
                     padding: 10px;
+										width: 100%;
                 }
                 transition: box-shadow .2s ease;
                 cursor: pointer;
@@ -180,7 +185,7 @@ body {
                     opacity: 0.1;
                     transform: scale(1.5);
                 }
-
+								#buttons {flex: 0}
                 &:hover {
                     box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
 
@@ -195,7 +200,11 @@ body {
                         opacity: 1;
                     }
                 }
-
+								#buttons {
+									position: absolute;
+									right: 7px;
+									width: fit-content;
+								}
                 a {
                     opacity: 0;
                     display: block;
@@ -204,8 +213,6 @@ body {
                     cursor: pointer;
                     transition: all .2s ease;
                     border: none;
-                    position: absolute;
-                    right: 7px;
                     &:hover {
                         box-shadow: 0 0 0 2px fadeout(@color, 60%);
                     }
@@ -220,4 +227,12 @@ body {
             }
         }
     }
+}
+
+#icon::before {
+    width: 20px;
+    transform: scale(1.4);
+}
+#icon {
+    margin-right: 5px;
 }

@@ -18,6 +18,9 @@ const app = Vue.createApp({
       if (!files.length) return;
       this.file = files[0]
     },
+		async getIcon(filename){
+			return await require('file-icons-js').getClass(filename)
+		},
 		upload(){
 			this.apiReq("POST /api/uploadFile", {
 				file: this.file,
@@ -27,9 +30,14 @@ const app = Vue.createApp({
 			}).then(console.log)
 		},
 		getFiles(){
-			this.apiReq("GET /api/getFiles").then(({files}) => {
+			this.apiReq("GET /api/getFiles").then(async ({files}) => {
 				console.log("Got, ", files);
 				this.files = files;
+				for (let idx in this.files){
+						 this.getIcon(this.files[idx].realName).then(icon => {
+							 this.files[idx].icon = icon;
+						 })
+				}
 			})
 		},
 		refresh(){this.getFiles()},
