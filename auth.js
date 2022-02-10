@@ -23,7 +23,7 @@ passport.deserializeUser(function(user, done) {
 
 // Discord auth
 var DiscordStrategy = require('passport-discord').Strategy;
-var scopes = ['identify', 'email', 'guilds'];
+var scopes = ['identify', 'email'];
 
 let strategy = new DiscordStrategy({
     clientID: process.env.DISCORD_CLIENT_ID,

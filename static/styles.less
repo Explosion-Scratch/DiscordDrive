@@ -1,0 +1,238 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@color: #5bb;
+@background: white;
+
+body {
+
+    input,
+    button {
+        accent-color: darken(@color, 10);
+    }
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: Montserrat,
+    sans-serif;
+    font-weight: 200;
+
+    #popup {
+        width: 100vw;
+        height: 100vh;
+        background: #0001;
+        position: fixed;
+        inset: 0;
+				z-index: 100;
+        backdrop-filter: blur(3px);
+    }
+
+    #upload {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        padding: 20px;
+        background: @background;
+        box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+        transform: translate(-50%, -50%);
+        background: @background;
+
+        #upload_container {
+            border: 2px dashed @color;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        input {
+            font-style: italic;
+            color: #666;
+        }
+
+        ::-webkit-file-upload-button,
+        button {
+            padding: 10px;
+            border-radius: 6px;
+            background: fadeout(@color, 90%);
+            color: darken(@color, 30);
+            cursor: pointer;
+            transition: all .2s ease;
+            border: 2px solid fadeout(@color, 50%);
+
+            &:hover {
+                background: fadeout(@color, 50%);
+            }
+
+            &:active {
+                transform: scale(.95);
+            }
+
+            &:focus {
+                outline: none;
+                box-shadow: 0 0 0 4px fadeout(@color, 90%);
+            }
+        }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        #close {
+            margin: 0;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            svg {
+                width: 1rem;
+            }
+        }
+    }
+
+    #file_explorer {
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+        width: clamp(80vw, 80vw, 600px);
+
+        * {
+            box-sizing: border-box;
+        }
+
+        #header {
+            h2 {
+                color: #333;
+                font-weight: 900;
+            }
+
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+
+            button {
+                border-radius: 5px;
+                cursor: pointer;
+                transition: all .2s ease;
+                border: none;
+
+                &:hover {
+                    box-shadow: 0 0 0 2px fadeout(@color, 60%);
+                }
+
+                background: fadeout(darken(@color, 20), 30%);
+                color: lighten(@color, 30%);
+
+                svg {
+                    width: 1.5rem;
+                }
+            }
+        }
+
+        #selectStuff {
+            display: flex;
+            align-items: center;
+            user-select: none;
+
+            &>div {
+                margin-right: 5px;
+            }
+					 svg {
+					  	color: darken(@color, 10%);
+					 }
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+
+            li {
+                justify-content: space-between;
+                position: relative;
+                &,
+                &>div {
+                    display: flex;
+                    align-items: center;
+                }
+                &>div {
+                    padding: 10px;
+										width: 100%;
+                }
+                transition: box-shadow .2s ease;
+                cursor: pointer;
+                padding: 10px;
+                border: 1px solid #eee;
+
+                #text {
+                    max-width: 80%;
+                    height: 100%;
+                    display: block;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                input[type=checkbox] {
+                    margin-right: 9px;
+                    opacity: 0.1;
+                    transform: scale(1.5);
+                }
+								#buttons {flex: 0}
+                &:hover {
+                    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+
+                    #buttons a {
+                        opacity: 1;
+                    }
+                }
+
+                &:hover,
+                &.selected {
+                    input[type=checkbox] {
+                        opacity: 1;
+                    }
+                }
+								#buttons {
+									position: absolute;
+									right: 7px;
+									width: fit-content;
+								}
+                a {
+                    opacity: 0;
+                    display: block;
+                    padding: 0 6px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    transition: all .2s ease;
+                    border: none;
+                    &:hover {
+                        box-shadow: 0 0 0 2px fadeout(@color, 60%);
+                    }
+
+                    background: fadeout(darken(@color, 20), 90%);
+                    color: darken(@color, 30%);
+
+                    svg {
+                        width: 1.5rem;
+                    }
+                }
+            }
+        }
+    }
+}
+
+#icon::before {
+    width: 20px;
+    transform: scale(1.4);
+}
+#icon {
+    margin-right: 5px;
+}

@@ -1,1 +1,67 @@
-only logged in peeps can access this
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet/less" type="text/css" href="styles.less" />
+	<script src="https://cdn.jsdelivr.net/npm/less@4" ></script>
+	<link href="https://cdn.jsdelivr.net/npm/@exuanbo/file-icons-js@latest/dist/css/file-icons.min.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/@exuanbo/file-icons-js@latest/dist/js/file-icons.min.js"></script>
+	<script src="//unpkg.com/vue@3"></script>
+	<title>DiscordDrive</title>
+</head>
+<body>
+	<div id="app">
+		<div id="popup" v-if="popup.enabled">
+			<div id="upload" v-if="popup.type === 'upload'">
+				<button id="close" @click="popup.enabled = false"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--jam" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M13.314 11.9l3.535-3.536a1 1 0 1 0-1.414-1.414l-3.536 3.535L8.364 6.95A1 1 0 1 0 6.95 8.364l3.535 3.535l-3.535 3.536a1 1 0 1 0 1.414 1.414l3.535-3.535l3.536 3.535a1 1 0 1 0 1.414-1.414l-3.535-3.536z" fill="currentColor"></path></svg></button>
+				<h2>Upload files</h2>
+				<div id="upload_container">
+					<input type="file" id="fileInput" @change="fileChanged($event)"/>
+					<button id="upload_button" @click="upload">Upload</button>
+				</div>
+						</div>
+			<div id="upload" v-if="popup.type === 'loading'">
+				<h2>Uploading...</h2>
+			</div>
+		</div>
+		<div id="file_explorer">
+			<div id="header">
+				<h2>DiscordDrive</h2>
+				<button @click="openUpload">
+					<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--ph" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M78.6 85a8.2 8.2 0 0 1 1.7-8.7l42-42a8.1 8.1 0 0 1 11.4 0l42 42a8.2 8.2 0 0 1 1.7 8.7a8 8 0 0 1-7.4 5h-34v62a8 8 0 0 1-16 0V90H86a8 8 0 0 1-7.4-5zM216 144a8 8 0 0 0-8 8v56H48v-56a8 8 0 0 0-16 0v56a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16v-56a8 8 0 0 0-8-8z" fill="currentColor"></path></svg>
+				</button>
+			</div>
+			<div id="selectedOptions">
+				<div id="selectStuff" @click="selectAllClicked">
+					<div v-if="selectionState === 'some'">
+						<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--carbon" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M10 14h12v4H10z" fill="currentColor"></path><path d="M26 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM6 26V6h20v20z" fill="currentColor"></path></svg>
+					</div>
+					<div v-if="selectionState === 'every'">
+						<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--carbon" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M26 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM6 26V6h20v20z" fill="currentColor"></path><path d="M14 21.5l-5-4.96L10.59 15L14 18.35L21.41 11L23 12.58l-9 8.92z" fill="currentColor"></path></svg>
+					</div>
+					<div v-if="selectionState === 'none'">
+						<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--carbon" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M26 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM6 26V6h20v20z" fill="currentColor"></path></svg>
+					</div>
+					Select
+				</div> 
+			</div>
+			<ul id="files">
+				<li v-for="file in files" :class="file.selected ? 'selected' : ''">
+					<div @click=>
+						<input @change="setSelectionState(file, $event.target)" type="checkbox" id="fileSelect" data-file="file.other.data.path"/>
+						<span id="text"><span id="icon" :class="file.icon || 'icon default-icon'"></span> {{file.realName}}</span>
+					</div>
+					<div id="buttons">
+						<a :href="`https://discorddrive.explosionscratc.repl.co/api/download/${file.name}?password=${password}`">
+							<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--ph" width="32" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path d="M80.3 115.7a8 8 0 0 1 11.4-11.3l28.3 28.3V40a8 8 0 0 1 16 0v92.7l28.3-28.3a8 8 0 0 1 11.4 11.3l-42 42a8.2 8.2 0 0 1-11.4 0zM216 144a8 8 0 0 0-8 8v56H48v-56a8 8 0 0 0-16 0v56a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16v-56a8 8 0 0 0-8-8z" fill="currentColor"></path></svg>
+						</a>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<script src="client.js"></script>
+</body>
+</html>

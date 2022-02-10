@@ -2,8 +2,14 @@
 
 module.exports = (req, res, next) => {
 	let setup = isSetup(req);
+	const path = req.originalUrl.replace(/\?.*$/, '');
 	if (setup.error){
-		return res.status(401).json({...setup})
+		if (path.startsWith("/api")){
+			return res.status(401).json({...setup})
+		} else {
+			console.log(path, setup)
+			return res.redirect("/setup");
+		}
 	} else {
 		return next();
 	}

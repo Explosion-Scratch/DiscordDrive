@@ -13,4 +13,5 @@ module.exports = (app) => {
 	app.use(express.json({type: ["*/json", "text/plain"]}));
 	app.use(passport.initialize());
 	app.use(passport.session());
+	app.use(express.static("static"));
 }

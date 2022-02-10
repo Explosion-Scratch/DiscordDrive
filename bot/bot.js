@@ -18,7 +18,7 @@ class FileClient {
 				return {error: true, message: "Channel ID, user ID and password required"};
 			}
 			this.password = password;
-			this.USER_ID = userId;
+			this.USER_ID = userID;
 			this.user = await User.findOne({discordId: userID}).exec();
 			if (!this.user){
 				return {error: true, message: `User with ID ${userID} not found`};
@@ -58,9 +58,9 @@ class FileClient {
 		if (b64.length < ALMOST_EIGHT_MB) {
 			parts = [b64];
 		} else {
-			parts = chunk(b64, ALMOST_EIGHT_MB);
+			parts = this.chunk(b64, ALMOST_EIGHT_MB);
 		}
-		let files = getFiles();
+		let files = await this.getFiles();
 		let attachments = [];
 		parts.forEach((part, idx) => {
 			let buffer = Buffer.from(
@@ -83,12 +83,12 @@ class FileClient {
 			dateUploaded: date,
 			totalParts: parts.length,
 			other: data,
-			realName: fromHex(name),
+			realName: this.fromHex(name),
 			parts: [],
 		};
 
-		for (let attachment_list of groupArr(attachments, 3)) {
-			let msg = await CHANNEL.send({
+		for (let attachment_list of this.groupArr(attachments, 3)) {
+			let msg = await this.channel.send({
 				files: attachment_list,
 			});
 			item.parts.push(...msg.attachments);

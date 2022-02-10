@@ -1,5 +1,6 @@
 module.exports = {encrypt, decrypt, getKey};
 const crypto = require("crypto");
+
 function encrypt(text, key) {
 	text = JSON.stringify(text);
 	key = getKey(key);
@@ -20,7 +21,7 @@ function decrypt(text, key) {
 	let decipher = crypto.createDecipheriv("aes-256-cbc", Buffer.from(key), iv);
 	let decrypted = decipher.update(encryptedText);
 	decrypted = Buffer.concat([decrypted, decipher.final()]);
-	return decrypted.toString();
+	return JSON.parse(decrypted.toString());
 }
 
 function getKey(str) {

@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@color: #5bb;
+
+body {
+    font-family: Montserrat, Sans-Serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+    border-radius: 10px;
+    font-weight: 800;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    color: #333;
+
+    span {
+        color: #666;
+        margin-bottom: 20px;
+        font-size: 18px;
+        font-style: italic;
+        font-weight: 200;
+    }
+
+    input {
+        padding: 8px;
+        margin: 10px 0;
+        border: 1px solid darken(fadeout(@color, 50%), 10%);
+        border-radius: 4px;
+
+        &::placeholder {
+            color: desaturate(@color, 20%);
+        }
+
+        &:focus {
+            outline: none;
+            box-shadow: rgba(@color, 0.25) 0px 2px 5px -1px, rgba(@color, 0.3) 0px 1px 3px -1px;
+        }
+    }
+
+    button,
+    input[type=submit] {
+        padding: 10px;
+        border-radius: 6px;
+        background: fadeout(@color, 90%);
+        color: darken(@color, 30);
+        cursor: pointer;
+        transition: all .2s ease;
+        border: 2px solid fadeout(@color, 50%);
+
+        &:hover:not(:disabled) {
+            background: fadeout(@color, 50%);
+        }
+
+        &:active {
+            transform: scale(.95);
+        }
+
+        &:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px fadeout(@color, 90%);
+        }
+        &[disabled]{
+            opacity: .5;
+            cursor: not-allowed;
+        }
+    }
+
+    #status {
+        font-weight: 400;
+
+        &[color=red] {
+            font-weight: 600;
+            color: #e33;
+        }
+        &[color=green] {
+            font-weight: 600;
+            color: #3a3;
+        }
+        &[color=yellow] {
+            font-weight: 600;
+            color: #ec0;
+        }
+    }
+
+}
