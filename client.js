@@ -2,12 +2,17 @@ const app = Vue.createApp({
 	data: () => ({
 		password: null,
 		files: [],
+		popup: {
+			enabled: false,
+		},
+		selectionState: "none",
 	}),
 	mounted(){
 		this.auth();
 		this.getFiles()
 	},
 	methods: {
+		openUpload(){this.popup.enabled = true; this.popup.type = "upload"},
 		fileChanged(e) {
       var files = e.target.files || e.dataTransfer.files;
       if (!files.length) return;
@@ -17,7 +22,7 @@ const app = Vue.createApp({
 			this.apiReq("POST /api/uploadFile", {
 				file: this.file,
 				data: {
-					test: "other data",
+					path: `/root/${this.file.name}`
 				}
 			}).then(console.log)
 		},
@@ -31,6 +36,39 @@ const app = Vue.createApp({
 		auth(){
 			this.password = localStorage.password || prompt("What is the password");
 			localStorage.password = this.password;
+		},
+		setSelectionState(){
+			let files = this.files;
+			if (!files.find(i => i.selected)){
+				this.selectionState = "none";
+			}
+			if (files.find(i => i.selected) && !files.every(i => i.selected)){
+				this.selectionState = "some";
+			}
+			if (files.every(i => i.selected)){
+				this.selectionState = "every";
+			}
+		},
+		selectAllClicked(){
+			switch (this.selectionState){
+				case "every":
+					files(false)
+					break;
+				case "some":
+					files(false)
+					break;
+				case "none":
+					files(true)
+					break;
+				default:
+					break;
+			};
+			function files(state){
+				this.files = [...this.files.map(i => {
+					return {...i, selected: state};
+				})]
+			}
+			this.setSelectionState();
 		},
 		apiReq(thing, body = {}){
 			thing = thing.trim();
