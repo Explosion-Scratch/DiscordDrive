@@ -1,0 +1,11 @@
+<link rel="stylesheet/less" type="text/css" href="homepage.less" />
+<script src="https://cdn.jsdelivr.net/npm/less@4" ></script>
+<h1>DiscordDrive</h1>
+<span>A free, open source, encrypted google drive like file manager that uses Discord as a backend</span>
+<a href="/auth/discord/login">Login</a>
+<script>
+	if (document.cookie.includes("loggedin=true")){
+		document.querySelector("a").innerText = "Go to dashboard";
+		document.querySelector("a").href = "/dashboard"
+	}
+</script>

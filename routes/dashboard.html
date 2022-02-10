@@ -21,6 +21,9 @@
 					<input type="file" id="fileInput" @change="fileChanged($event)"/>
 					<button id="upload_button" @click="upload">Upload</button>
 				</div>
+						</div>
+			<div id="upload" v-if="popup.type === 'loading'">
+				<h2>Uploading...</h2>
 			</div>
 		</div>
 		<div id="file_explorer">
@@ -48,7 +51,7 @@
 				<li v-for="file in files" :class="file.selected ? 'selected' : ''">
 					<div @click=>
 						<input @change="setSelectionState(file, $event.target)" type="checkbox" id="fileSelect" data-file="file.other.data.path"/>
-						<span id="text"><span id="icon" :class="file.icon || ''"></span> {{file.realName}}</span>
+						<span id="text"><span id="icon" :class="file.icon || 'icon default-icon'"></span> {{file.realName}}</span>
 					</div>
 					<div id="buttons">
 						<a :href="`https://discorddrive.explosionscratc.repl.co/api/download/${file.name}?password=${password}`">

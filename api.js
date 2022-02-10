@@ -1,20 +1,33 @@
-const {sendFile, getFile} = require("./files.js")
-const {writeFiles, getFiles} = require("./filelist.js");
-const {verifyToken, hash} = require("./jwt.js");
-let a = new (require("express")).Router();
+let a = new (require("express").Router)();
+const password = require("./middleware/getPassword.js");
+const login = require("./middleware/requireLogin.js");
+const setup = require("./middleware/requireSetup.js");
 const fileUpload = require('express-fileupload');
+const FileClient = require("./bot/bot.js");
 
 a.use(fileUpload());
+a.use(login);
+a.use(setup);
 
-a.get("/hash", hash);
-a.get("/getFile/:name", verifyToken, async (req, res) => {
-	let {buffer, data} = await getFile(req.params.name).catch((e) => {res.status(404).json({error: true, message: "No such file", err: e})});
-	res.json({data, file: `data:${data.mime};base64,${buffer.toString("base64")}`});
-})
+console.log("Started API");
 
-a.get("/download/:name", verifyToken, async (req, res) => {
+a.get("/getFiles", password, async (req, res) => {
+	let c = await new FileClient({
+		channelID: req.user.channelId,
+		userID: req.user.discordId,
+		password: req.password,
+	});
+	if (c.error){return res.status(500).json(c)}
+	c.getFiles().then((f) => res.json(f));
+});
+a.get("/download/:name", password, async (req, res) => {
 	try {
-		let {buffer, data} = await getFile(req.params.name);
+		let c = await new FileClient({
+			channelID: req.user.channelId,
+			userID: req.user.discordId,
+			password: req.password,
+		})
+		let {buffer, data} = await c.getFile(req.params.name);
 		console.log(data);
 		res.set({
 			"Content-Disposition": `attachment; filename="${Buffer.from(req.params.name, "hex")}"`
@@ -24,27 +37,36 @@ a.get("/download/:name", verifyToken, async (req, res) => {
 		res.status(500).json({error: true, message: "No such file", err: e});
 	}
 })
-a.post("/uploadFile", verifyToken, async (req, res) => {
-	if (!(req.files && Object.keys(req.files).length && req.files.file)){
-		return res.status(400).json({error: true, message: "No files uploaded, none provided."})
+a.post("/uploadFile", password, async (req, res) => {
+	console.log("POST uploadFile")
+	console.log(req.files)
+	let c = await new FileClient({
+		channelID: req.user.channelId,
+		userID: req.user.discordId,
+		password: req.password,
+	});
+	if (c.error){return res.status(500).json(c)}
+	console.log('Created file client');
+	if (!(req.files && Object.keys(req.files).length && req.files.file)) {
+		return res
+			.status(400)
+			.json({ error: true, message: "No files uploaded, none provided." });
 	}
 	let file = req.files.file;
 	let name = toHex(file.name);
-	await sendFile(file.data, name, {
-		mime: file.mimetype, 
-		md5: file.md5, 
+	console.log("Sending file")
+	await c.sendFile(file.data, name, {
+		mime: file.mimetype,
+		md5: file.md5,
 		size: file.size,
 		realName: file.name,
-		data: JSON.parse(req.body.data || "{}") || {}
-	})
-	return res.json(getFiles().files.find(i => i.name === name))
+		data: JSON.parse(req.body.data || "{}") || {},
+	});
+	console.log("Sent file")
+	return res.json((await c.getFiles()).files.filter(i => i.name === name));
 });
 
-a.get("/getFiles", verifyToken, (req, res) => {
-	res.json(getFiles())
-})
 module.exports = a;
-
 
 function toHex(str,hex){
   try{

@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@color: #5bb;
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    flex-direction: column;
+    font-family: Montserrat, Sans-Serif;
+
+    h1 {
+        color: #333;
+    }
+
+    span {
+        font-style: italic;
+        font-size: 17px;
+        color: #666;
+    }
+
+    a {
+        background-image: linear-gradient(to right, @color 0%, spin(@color, 30) 51%, @color 100%)
+    }
+
+    a {
+        text-decoration: none;
+        margin: 10px;
+        padding: 10px 30px;
+        text-align: center;
+        text-transform: uppercase;
+        transition: 0.5s;
+        background-size: 200% auto;
+        color: white;
+        box-shadow: 0 0 20px #eee;
+        border-radius: 4px;
+        display: block;
+
+        &:hover {
+            background-position: right center;
+            /* change the direction of the change here */
+            color: #fff;
+            text-decoration: none;
+        }
+        &:active {
+            transform: scale(.96);
+        }
+    }
+}

@@ -19,15 +19,25 @@ const app = Vue.createApp({
       this.file = files[0]
     },
 		async getIcon(filename){
-			return await require('file-icons-js').getClass(filename)
+			let icon = await require('file-icons-js').getClass(filename);
+			if (icon.includes("icon-file-text")){
+				icon = icon.replace("icon-file-text", "default-icon");
+			}
+			if (icon.includes("icon-file-pdf")){
+				icon = icon.replace("icon-file-pdf", "default-icon");
+			}
+			return icon;
 		},
 		upload(){
+			this.popup.type = "loading";
 			this.apiReq("POST /api/uploadFile", {
 				file: this.file,
 				data: {
 					path: `/root/${this.file.name}`
 				}
-			}).then(console.log)
+			}).then(() => {
+				this.popup.enabled = false;
+			})
 		},
 		getFiles(){
 			this.apiReq("GET /api/getFiles").then(async ({files}) => {

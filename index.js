@@ -1,15 +1,14 @@
-const {verifyToken} = require("./jwt");
-
-const api = require("./api.js")
+console.clear()
 const express = require("express");
 const app = express();
-require("./filelist.js")
-app.use("/api", api);
-//Magic
-app.set("json spaces", 2);
+const passport = require("passport");
+const middleware = require("./middleware/index.js");
 
-app.use(express.static(__dirname))
+middleware(app);
 
-app.listen(3000, () => {
-	console.log("Listening on port 3000")
-});
+app.use("/auth", require("./auth.js"))
+app.use(require("./routes.js"))
+app.use("/api", require("./api.js"));
+
+
+app.listen(3000)

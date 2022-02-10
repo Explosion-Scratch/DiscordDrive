@@ -1,0 +1,38 @@
+<link rel="stylesheet/less" type="text/css" href="setup.less" />
+<script src="https://cdn.jsdelivr.net/npm/less@4" ></script>
+<form method="POST" action="/setup" enctype="application/x-www-form-urlencoded">
+	<h1>Setup</h1>
+	<span>You're seeing this because you haven't set an encryption key and/or channel ID.</span>
+	Channel ID:
+	<input name="channelId" placeholder="Channel ID">
+	Password, can't be changed later:
+	<input name="password" placeholder="Password to encrypt with" type="password" id="password">
+	<input name="confirm_password" placeholder="Confirm password" type="password" id="confirm">
+	<div id="status"></div>
+	<input type="submit">
+</form>
+<script>
+	let $ = (a) => document.querySelector(a);
+	$("#password").onkeyup = () => check();
+	$("#confirm").onkeyup = () => check();
+	
+	function check(){
+		let disabled = true;
+		if (!$("#confirm").value){
+			$("#status").setAttribute("color", "yellow");
+			$("#status").innerText = "Enter a confirmation password";
+		} else if ($("#password").value !== $("#confirm").value) {
+			$("#status").setAttribute("color", "red")
+			$("#status").innerText = "Passwords don't match";
+		} else if ($("#password").value === $("#confirm").value){
+			$("#status").setAttribute("color", "green");
+			$("#status").innerText = "Passwords match"
+			disabled = false;
+		}
+		if (disabled){
+			$("[type=submit]").setAttribute("disabled", "true")
+		} else {
+			$("[type=submit]").removeAttribute("disabled")
+		}
+	}
+</script>
