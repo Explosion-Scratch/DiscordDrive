@@ -5,24 +5,52 @@ a.get("/", (req, res) => res.send("yay"))
 
 // MONGODB
 const connect = require("./auth/db.js");
+const User = require("./schemas/User.js")
 connect()
+
 // PASSPORT
-// const passport = require("passport");
-// var DiscordStrategy = require('passport-discord').Strategy;
-// var scopes = ['identify', 'email', 'guilds', 'guilds.join'];
+const passport = require("passport");
+const refresh = require('passport-oauth2-refresh');
 
-// passport.use(new DiscordStrategy({
-//     clientID: 'id',
-//     clientSecret: 'secret',
-//     callbackURL: `https://DiscordDrive.explosionscratc.repl.co/auth/callback`,
-//     scope: scopes
-// },
-// function(accessToken, refreshToken, profile, cb) {
-//     User.findOrCreate({ discordId: profile.id }, function(err, user) {
-//         return cb(err, user);
-//     });
-// }));
+// Serialization - Prevent "Failed to serialize user into session"
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
 
-// app.get("/auth/login", passport.authenticate("discord"))
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
+
+// Discord auth
+var DiscordStrategy = require('passport-discord').Strategy;
+var scopes = ['identify', 'email', 'guilds'];
+
+let strategy = new DiscordStrategy({
+    clientID: process.env.DISCORD_CLIENT_ID,
+    clientSecret: process.env.DISCORD_CLIENT_SECRET,
+    callbackURL: `https://DiscordDrive.explosionscratc.repl.co/auth/discord/callback`,
+    scope: scopes
+},
+function(accessToken, refreshToken, profile, cb) {
+    User.findOrCreate(
+			{ discordId: profile.id },
+			{accessToken, refreshToken, profile, data: {}}, 
+			function(err, user) {
+        return cb(err, user);
+			}
+		);
+});
+
+passport.use(strategy);
+refresh.use(strategy);
+
+// Routes
+a.get("/discord/login", passport.authenticate("discord"))
+
+a.get("/discord/callback", passport.authenticate("discord", {
+	failureRedirect: '/'
+}), (req, res) => {
+	res.redirect("/dashboard");
+})
 
 module.exports = a;
