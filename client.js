@@ -37,7 +37,11 @@ const app = Vue.createApp({
 			this.password = localStorage.password || prompt("What is the password");
 			localStorage.password = this.password;
 		},
-		setSelectionState(){
+		setSelectionState(target, evt_target){
+			if (target && evt_target){
+				let idx = this.files.findIndex(i => JSON.stringify(i) === JSON.stringify(target));
+				this.files[idx].selected = evt_target.closest("input").checked;
+			}
 			let files = this.files;
 			if (!files.find(i => i.selected)){
 				this.selectionState = "none";
@@ -64,9 +68,10 @@ const app = Vue.createApp({
 					break;
 			};
 			function files(state){
-				this.files = [...this.files.map(i => {
-					return {...i, selected: state};
-				})]
+				[...document.querySelectorAll("#file_explorer > ul > li input[type=checkbox]")].filter(i => i.checked !== state).forEach(i => i.click());
+				// app.files = [...app.files.map(i => {
+				// 	return {...i, selected: state};
+				// })]
 			}
 			this.setSelectionState();
 		},
