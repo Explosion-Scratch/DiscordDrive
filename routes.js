@@ -13,7 +13,9 @@ a.get("/setup", login, (req, res, next) => {
 	}
 	next()
 }, send("setup"));
-
+a.get("/api/addBot", (req, res) => {
+	res.redirect("https://discord.com/api/oauth2/authorize?client_id=940312489114087494&permissions=100352&scope=bot");
+})
 a.get("/", (req, res, next) => {
 	if (req.user){
 		res.cookie('loggedin', 'true');
